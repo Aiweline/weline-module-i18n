@@ -121,7 +121,7 @@ class Words extends BaseController
         $this->assign('words', $this->localeDictionary->getItems());
         $this->assign('pagination', $this->localeDictionary->getPagination());
         $this->assign('total', $this->localeDictionary->pagination['totalSize']);
-        $this->assign('translate_mode', __(Env::getInstance()->getConfig('translate_mode')));
+        $this->assign('translate_mode', __(Env::getInstance()->getConfig('translate_mode')??''));
         return $this->fetch();
     }
 
