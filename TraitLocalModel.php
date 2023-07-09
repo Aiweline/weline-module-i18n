@@ -24,7 +24,7 @@ trait TraitLocalModel
     {
         parent::__init();
         if (!CLI) {
-            $this->where(self::fields_local_code, Cookie::getLang(), '=', 'or')->where(self::fields_local_code.' is null');
+            $this->where(self::fields_local_code, Cookie::getLang(), '=', 'or')->where(self::fields_local_code . ' is null');
         }
     }
 
@@ -49,32 +49,81 @@ trait TraitLocalModel
      */
     public function install(ModelSetup $setup, Context $context): void
     {
-//        $setup->dropTable();
         if (!$setup->tableExist()) {
-            $setup->createTable()
-                  ->addColumn(
-                      self::fields_ID,
-                      TableInterface::column_type_INTEGER,
-                      0,
-                      'not null',
-                      '属性ID'
-                  )
-                  ->addColumn(
-                      self::fields_local_code,
-                      TableInterface::column_type_VARCHAR,
-                      6,
-                      'not null',
-                      '当地码'
-                  )
-                  ->addColumn(
-                      self::fields_name,
-                      TableInterface::column_type_VARCHAR,
-                      255,
-                      'not null',
-                      '当地名称'
-                  )
-                  ->addConstraints('primary key (' . self::fields_ID . ',' . self::fields_local_code . ')')
-                  ->create();
+            $creatTable = $setup->createTable()
+                                ->addColumn(
+                                    $this::fields_ID,
+                                    TableInterface::column_type_INTEGER,
+                                    0,
+                                    'not null',
+                                    'ID'
+                                )
+                                ->addColumn(
+                                    self::fields_local_code,
+                                    TableInterface::column_type_VARCHAR,
+                                    10,
+                                    'not null',
+                                    '当地码'
+                                )
+                                ->addColumn(
+                                    self::fields_name,
+                                    TableInterface::column_type_VARCHAR,
+                                    255,
+                                    'not null',
+                                    '当地名称'
+                                );
+            # 其他翻译字段
+            $not_in_fields = [
+                $this::fields_ID,
+                self::fields_local_code,
+                self::fields_name,
+                self::fields_CREATE_TIME,
+                self::fields_UPDATE_TIME
+            ];
+            $modelFileds   = $this->getModelFields();
+            foreach ($modelFileds as $key => $modelFiled) {
+                if (!in_array($modelFiled, $not_in_fields)) {
+                    $creatTable->addColumn(
+                        $modelFiled,
+                        TableInterface::column_type_TEXT,
+                        200000,
+                        '',
+                        ''
+                    );
+                }
+            }
+            $creatTable->addConstraints('primary key (' . $this::fields_ID . ',' . self::fields_local_code . ')')
+                       ->create();
         }
+    }
+
+    public function getLocalCode()
+    {
+        return $this->getData(self::fields_local_code);
+    }
+
+    public function setLocalCode(string $local_code)
+    {
+        return $this->setData(self::fields_local_code, $local_code);
+    }
+
+    public function getName()
+    {
+        return $this->getData(self::fields_name);
+    }
+
+    public function setName(string $name)
+    {
+        return $this->setData(self::fields_name, $name);
+    }
+
+    public function get(string $key)
+    {
+        return $this->getData($key);
+    }
+
+    public function set(string $key, mixed $value)
+    {
+        return $this->setData($key, $value);
     }
 }

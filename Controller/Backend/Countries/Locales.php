@@ -179,7 +179,8 @@ class Locales extends BaseController
             $this->getMessageManager()->addWarning(__('该区域不存在！区域代码：%1', $code));
             $this->redirect($this->request->getReferer());
         }
-        $locale->setData($locale::fields_IS_INSTALL, 1)->save(true);
+        $flag = $this->i18n->getCountryFlagWithLocal($code,42);
+        $locale->setData($locale::fields_IS_INSTALL, 1)->setData($locale::fields_FLAG,$flag['flag']??'')->save(true);
         $this->getMessageManager()->addSuccess(__('区域已安装！区域代码：%1', $code));
         $this->redirect($this->request->getReferer());
     }

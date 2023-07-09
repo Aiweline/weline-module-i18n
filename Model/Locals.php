@@ -27,6 +27,8 @@ class Locals extends \Weline\Framework\Database\Model
     public const fields_IS_INSTALL  = 'is_install';
     public const fields_FLAG        = 'flag';
 
+    public array $_unit_primary_keys = ['code', 'target_code'];
+
     /**
      * @inheritDoc
      */
@@ -51,7 +53,7 @@ class Locals extends \Weline\Framework\Database\Model
 //        $setup->dropTable();
         if (!$setup->tableExist()) {
             $setup->createTable()
-                  ->addColumn(self::fields_ID, Table::column_type_VARCHAR, 10, 'primary key', '地方代码')
+                  ->addColumn(self::fields_ID, Table::column_type_VARCHAR, 10, 'not null', '地方代码')
                   ->addColumn(self::fields_TARGET_CODE, Table::column_type_VARCHAR, 10, 'not null', '展示的地方代码')
                   ->addColumn(self::fields_NAME, Table::column_type_VARCHAR, 60, 'not null', '展示的地方代码对应地方代码名称')
                   ->addColumn(self::fields_IS_ACTIVE, Table::column_type_SMALLINT, 1, 'not null default 0', '启用状态')

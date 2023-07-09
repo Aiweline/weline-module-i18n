@@ -17,7 +17,14 @@ use Weline\Framework\Http\Cookie;
 
 class LocalModel extends Model implements LocalModelInterface
 {
-    public array $_unit_primary_keys = [self::fields_ID, self::fields_local_code];
-    public array $_index_sort_keys = [self::fields_ID, self::fields_local_code];
+    public array $_unit_primary_keys = [self::fields_local_code];
+    public array $_index_sort_keys = [self::fields_local_code];
     use TraitLocalModel;
+
+    public function __init()
+    {
+        parent::__init();
+        array_unshift($this->_unit_primary_keys, $this::fields_ID);
+        array_unshift($this->_index_sort_keys, $this::fields_ID);
+    }
 }

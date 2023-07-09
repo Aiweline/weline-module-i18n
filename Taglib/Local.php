@@ -42,7 +42,7 @@ class Local implements \Weline\Taglib\TaglibInterface
      */
     static function attr(): array
     {
-        return ['model' => true, 'id' => true];
+        return ['model' => true, 'id' => true, 'field' => true];
     }
 
     /**
@@ -70,10 +70,12 @@ class Local implements \Weline\Taglib\TaglibInterface
         return function ($tag_key, $config, $tag_data, $attributes) use ($ids) {
             # 这里可以做任何处理，然后返回对应处理后的内容
             $model = $attributes['model'];
+            $field = $attributes['field'];
             /**@var Taglib $Taglib */
             $Taglib    = ObjectManager::getInstance(Taglib::class);
             $origin_id = $attributes['id'];
-            $id        = 'off-canvas-<?=(' . $Taglib->varParser($origin_id) . '?:\'' . str_replace('.', '-', $origin_id) . '\')?>';
+            $parserId = '<?=(' . $Taglib->varParser($origin_id) . '?:\'' . str_replace('.', '-', $origin_id) . '\')?>';
+            $id        = 'local-off-canvas-'.$parserId;
             if (in_array($id, $ids)) {
                 throw new Exception('local标签ID不允许重复！');
             }
@@ -81,11 +83,11 @@ class Local implements \Weline\Taglib\TaglibInterface
 
             $name = trim($tag_data[2] ?? '');
             /**@var Request $request */
-            $request    = ObjectManager::getInstance(Request::class);
-            if($request->isBackend()){
-                $action     = $request->getUrlBuilder()->getBackendUrl('i18n/backend/taglib/local', ['modle' => $model]);
-            }else{
-                $action     = $request->getUrlBuilder()->getUrl('i18n/taglib/local', ['modle' => $model]);
+            $request = ObjectManager::getInstance(Request::class);
+            if ($request->isBackend()) {
+                $action = $request->getUrlBuilder()->getBackendUrl('i18n/backend/taglib/local', ['model' => $model, 'field' => $field]);
+            } else {
+                $action = $request->getUrlBuilder()->getUrl('i18n/taglib/local', ['model' => $model, 'field' => $field]);
             }
             $closeText  = __('关闭');
             $titileText = __('翻译窗口');
@@ -111,7 +113,7 @@ class Local implements \Weline\Taglib\TaglibInterface
                         <div class='offcanvas-body'>
                             <div class='position-relative w-100 h-100 '>
                                 <iframe id='{$id}Iframe' class='w-100 h-100'
-                                        data-src="{$action}&name={$name}"
+                                        data-src="{$action}&value={$name}&id={$parserId}"
                                         frameborder='0'></iframe>
                             </div>
                         </div>

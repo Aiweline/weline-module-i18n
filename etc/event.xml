@@ -11,4 +11,7 @@
     <event name="Framework_Router::route_after">
         <observer name="Weline_I18n::parse_words_register" instance="Weline\I18n\Observer\ParserWordsRegister" disabled="false" shared="true"/>
     </event>
+    <event name="Framework_Module::module_upgrade">
+        <observer name="Weline_I18n::i18n_locals_upgrade" instance="Weline\I18n\Observer\I18nLocalsUpgrade" disabled="false" shared="true"/>
+    </event>
 </config>
