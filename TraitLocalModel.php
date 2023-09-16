@@ -51,27 +51,27 @@ trait TraitLocalModel
     {
         if (!$setup->tableExist()) {
             $creatTable = $setup->createTable()
-                                ->addColumn(
-                                    $this::fields_ID,
-                                    TableInterface::column_type_INTEGER,
-                                    0,
-                                    'not null',
-                                    'ID'
-                                )
-                                ->addColumn(
-                                    self::fields_local_code,
-                                    TableInterface::column_type_VARCHAR,
-                                    10,
-                                    'not null',
-                                    '当地码'
-                                )
-                                ->addColumn(
-                                    self::fields_name,
-                                    TableInterface::column_type_VARCHAR,
-                                    255,
-                                    'not null',
-                                    '当地名称'
-                                );
+                ->addColumn(
+                    $this::fields_ID,
+                    TableInterface::column_type_INTEGER,
+                    0,
+                    'not null',
+                    'ID'
+                )
+                ->addColumn(
+                    self::fields_local_code,
+                    TableInterface::column_type_VARCHAR,
+                    10,
+                    'not null',
+                    '当地码'
+                )
+                ->addColumn(
+                    self::fields_name,
+                    TableInterface::column_type_VARCHAR,
+                    255,
+                    'not null',
+                    '当地名称'
+                );
             # 其他翻译字段
             $not_in_fields = [
                 $this::fields_ID,
@@ -93,7 +93,7 @@ trait TraitLocalModel
                 }
             }
             $creatTable->addConstraints('primary key (' . $this::fields_ID . ',' . self::fields_local_code . ')')
-                       ->create();
+                ->create();
         }
     }
 
@@ -115,15 +115,5 @@ trait TraitLocalModel
     public function setName(string $name)
     {
         return $this->setData(self::fields_name, $name);
-    }
-
-    public function get(string $key)
-    {
-        return $this->getData($key);
-    }
-
-    public function set(string $key, mixed $value)
-    {
-        return $this->setData($key, $value);
     }
 }
