@@ -116,4 +116,14 @@ trait TraitLocalModel
     {
         return $this->setData(self::fields_name, $name);
     }
+
+    public function get(string $key)
+    {
+        return $this->getData($key);
+    }
+
+    public function set(string $key, mixed $value)
+    {
+        return $this->setData($key, $value);
+    }
 }
