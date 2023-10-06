@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /*
@@ -24,7 +25,7 @@ class Local implements \Weline\Taglib\TaglibInterface
     /**
      * @inheritDoc
      */
-    static public function name(): string
+    public static function name(): string
     {
         return 'local';
     }
@@ -32,7 +33,7 @@ class Local implements \Weline\Taglib\TaglibInterface
     /**
      * @inheritDoc
      */
-    static function tag(): bool
+    public static function tag(): bool
     {
         return true;
     }
@@ -40,23 +41,15 @@ class Local implements \Weline\Taglib\TaglibInterface
     /**
      * @inheritDoc
      */
-    static function attr(): array
+    public static function attr(): array
     {
-        return ['model' => true, 'id' => true, 'field' => true];
+        return ['model' => true, 'id' => true, 'field' => true,'name'=>true];
     }
 
     /**
      * @inheritDoc
      */
-    static function tag_start(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    static function tag_end(): bool
+    public static function tag_start(): bool
     {
         return false;
     }
@@ -64,18 +57,27 @@ class Local implements \Weline\Taglib\TaglibInterface
     /**
      * @inheritDoc
      */
-    static function callback(): callable
+    public static function tag_end(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public static function callback(): callable
     {
         $ids = [];
         return function ($tag_key, $config, $tag_data, $attributes) use ($ids) {
             # 这里可以做任何处理，然后返回对应处理后的内容
             $model = $attributes['model'];
             $field = $attributes['field'];
+            $name = $attributes['name'];
             /**@var Taglib $Taglib */
             $Taglib    = ObjectManager::getInstance(Taglib::class);
             $origin_id = $attributes['id'];
             $parserId = '<?=(' . $Taglib->varParser($origin_id) . '?:\'' . str_replace('.', '-', $origin_id) . '\')?>';
-            $id        = 'local-off-canvas-'.$parserId;
+            $id        = 'local-'.$name.'-'.$parserId;
             if (in_array($id, $ids)) {
                 throw new Exception('local标签ID不允许重复！');
             }
@@ -134,7 +136,7 @@ TAG,
     /**
      * @inheritDoc
      */
-    static function tag_self_close(): bool
+    public static function tag_self_close(): bool
     {
         return false;
     }
@@ -142,12 +144,12 @@ TAG,
     /**
      * @inheritDoc
      */
-    static function tag_self_close_with_attrs(): bool
+    public static function tag_self_close_with_attrs(): bool
     {
         return false;
     }
 
-    static function document(): string
+    public static function document(): string
     {
         return '翻译标签，使用Model继承 Weline\I18n\LocalModel.然后使用。示例：' . htmlentities('<local model="Weline\Demo\Model\Demo"></local>') . ' 其中 Weline\Demo\Model\Demo 继承Weline\I18n\LocalModel。';
     }
