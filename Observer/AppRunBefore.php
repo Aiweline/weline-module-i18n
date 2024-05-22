@@ -16,7 +16,9 @@ class AppRunBefore implements ObserverInterface
      */
     public function execute(Event $event)
     {
-        ;
+        if(CLI){
+            return;
+        }
         $_SERVER['WELINE-USER-LANG'] = Cookie::get('WELINE-USER-LANG');
         # 处理第一级语言代码
         $uri = ltrim($_SERVER['REQUEST_URI'], '/');
