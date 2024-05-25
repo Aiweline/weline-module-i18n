@@ -447,4 +447,25 @@ class I18n
     {
         return Countries::getNames($display_local_code);
     }
+
+    /**
+     * @DESC          # 获取安装模型
+     *
+     * @AUTH    秋枫雁飞
+     * @EMAIL aiweline@qq.com
+     * @DateTime: 2023/7/4 23:41
+     * 参数区：
+     * @return \Weline\I18n\Model\Locals
+     */
+    public function getActiveLocalsModel(string $target_local='zh_Hans_CN'): Locals
+    {
+        $cache_key = __FUNCTION__;
+        $locals    = $this->i18nCache->get($cache_key);
+        if ($locals) {
+            return $locals;
+        }
+        /**@var Locals $LocalsModel */
+        $LocalsModel = ObjectManager::getInstance(Locals::class)->where('target_code',$target_local);
+        return $LocalsModel;
+    }
 }

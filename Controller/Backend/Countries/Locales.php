@@ -138,9 +138,9 @@ class Locales extends BaseController
             try {
                 $this->locale->clearQuery();# 清理之前加载的target_locale_code数据
                 $this->locale->where($this->locale::fields_CODE, $code)
-                                      ->setData($this->locale::fields_IS_ACTIVE, 1)
-                                      ->update()
-                                      ->fetch();
+                             ->setData($this->locale::fields_IS_ACTIVE, 1)
+                             ->update()
+                             ->fetch();
                 $this->getMessageManager()->addSuccess(__('激活成功！'));
             } catch (\Exception $exception) {
                 $this->getMessageManager()->addException($exception);
@@ -158,9 +158,9 @@ class Locales extends BaseController
                 $this->locale->clearQuery();# 清理之前加载的target_locale_code数据
                 $this->locale->clearData();# 清理之前加载的target_locale_code数据
                 $this->locale->where($this->locale::fields_CODE, $code)
-                                      ->setData($this->locale::fields_IS_ACTIVE, 0)
-                                      ->update()
-                                      ->fetch();
+                             ->setData($this->locale::fields_IS_ACTIVE, 0)
+                             ->update()
+                             ->fetch();
                 $this->getMessageManager()->addSuccess(__('禁用成功！'));
             } catch (\Exception $exception) {
                 $this->getMessageManager()->addException($exception);
@@ -179,7 +179,8 @@ class Locales extends BaseController
             $this->getMessageManager()->addWarning(__('该区域不存在！区域代码：%1', $code));
             $this->redirect($this->request->getReferer());
         }
-        $locale->setData($locale::fields_IS_INSTALL, 1)->save();
+        $flag = $this->i18n->getCountryFlagWithLocal($code,42);
+        $locale->setData($locale::fields_IS_INSTALL, 1)->setData($locale::fields_FLAG,$flag['flag']??'')->save(true);
         $this->getMessageManager()->addSuccess(__('区域已安装！区域代码：%1', $code));
         $this->redirect($this->request->getReferer());
     }

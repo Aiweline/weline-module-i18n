@@ -18,11 +18,11 @@ use Weline\Framework\Setup\Db\ModelSetup;
 
 class Dictionary extends \Weline\Framework\Database\Model
 {
-    public const fields_ID          = 'md5';
-    public const fields_MD5         = 'md5';
-    public const fields_WORD        = 'word';
+    public const fields_ID = 'md5';
+    public const fields_MD5 = 'md5';
+    public const fields_WORD = 'word';
     public const fields_LOCALE_CODE = 'locale_code';
-    public const fields_TRANSLATE   = 'translate';
+    public const fields_TRANSLATE = 'translate';
 
     /**
      * @inheritDoc
@@ -48,11 +48,12 @@ class Dictionary extends \Weline\Framework\Database\Model
 //        $setup->dropTable();
         if (!$setup->tableExist()) {
             $setup->createTable()
-                  ->addColumn(self::fields_ID, TableInterface::column_type_VARCHAR, 128, 'primary key not null', 'MD5指纹')
-                  ->addColumn(self::fields_WORD, TableInterface::column_type_TEXT, null, 'not null', '词')
-                  ->addColumn(self::fields_LOCALE_CODE, TableInterface::column_type_VARCHAR, 12, 'not null', '地区码')
-                  ->addColumn(self::fields_TRANSLATE, TableInterface::column_type_TEXT, null, 'not null', '翻译')
-                  ->create();
+                ->addColumn(self::fields_ID, TableInterface::column_type_VARCHAR, 128, 'primary key not null', 'MD5指纹')
+                ->addColumn(self::fields_WORD, TableInterface::column_type_TEXT, null, 'not null', '词')
+                ->addColumn(self::fields_LOCALE_CODE, TableInterface::column_type_VARCHAR, 12, 'not null', '地区码')
+                ->addColumn(self::fields_TRANSLATE, TableInterface::column_type_TEXT, null, 'not null', '翻译')
+                ->addIndex(\Weline\Framework\Database\Api\Db\TableInterface::index_type_KEY, 'idx_code', self::fields_LOCALE_CODE, '区码索引')
+                ->create();
         }
     }
 }

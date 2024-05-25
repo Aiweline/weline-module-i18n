@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Weline\I18n\Model;
 
+use Weline\Framework\Database\Api\Db\TableInterface;
 use Weline\Framework\Database\Db\Ddl\Table;
 use Weline\Framework\Manager\ObjectManager;
 use Weline\Framework\Setup\Data\Context;
@@ -21,11 +22,11 @@ use Weline\I18n\Model\Countries\Locale\Name;
 
 class Countries extends \Weline\Framework\Database\Model
 {
-    public const fields_ID         = 'code';
-    public const fields_CODE       = 'code';
-    public const fields_IS_ACTIVE  = 'is_active';
+    public const fields_ID = 'code';
+    public const fields_CODE = 'code';
+    public const fields_IS_ACTIVE = 'is_active';
     public const fields_IS_INSTALL = 'is_install';
-    public const fields_FLAG       = 'flag';
+    public const fields_FLAG = 'flag';
 
     /**
      * @inheritDoc
@@ -51,11 +52,14 @@ class Countries extends \Weline\Framework\Database\Model
 //        $setup->dropTable();
         if (!$setup->tableExist()) {
             $setup->createTable()
-                  ->addColumn(self::fields_ID, Table::column_type_VARCHAR, 10, 'primary key', '国家码')
-                  ->addColumn(self::fields_FLAG, Table::column_type_TEXT, 20000, 'not null', '国旗')
-                  ->addColumn(self::fields_IS_ACTIVE, Table::column_type_SMALLINT, 1, 'not null default 0', '启用状态')
-                  ->addColumn(self::fields_IS_INSTALL, Table::column_type_SMALLINT, 1, 'not null default 0', '是否安装')
-                  ->create();
+                ->addColumn(self::fields_ID, Table::column_type_VARCHAR, 10, 'primary key', '国家码')
+                ->addColumn(self::fields_FLAG, Table::column_type_TEXT, 20000, 'not null', '国旗')
+                ->addColumn(self::fields_IS_ACTIVE, Table::column_type_SMALLINT, 1, 'not null default 0', '启用状态')
+                ->addColumn(self::fields_IS_INSTALL, Table::column_type_SMALLINT, 1, 'not null default 0', '是否安装')
+                ->addIndex(TableInterface::index_type_KEY, 'idx_code', self::fields_CODE, '国家码索引')
+                ->addIndex(TableInterface::index_type_KEY, 'idx_is_active', self::fields_IS_ACTIVE, '状态索引')
+                ->addIndex(TableInterface::index_type_KEY, 'idx_is_install', self::fields_IS_INSTALL, '安装状态索引')
+                ->create();
         }
     }
 
