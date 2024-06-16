@@ -97,11 +97,11 @@ class Words extends BaseController
                 $this->locale::fields_IS_INSTALL => 1
             ]
         )->where('n.display_locale_code', Cookie::getLangLocal())
-                               ->where('ln.display_locale_code', Cookie::getLangLocal())
-                               ->joinModel(Name::class, 'n', 'main_table.country_code=n.country_code')
-                               ->joinModel(Locale\Name::class, 'ln', 'main_table.code=ln.locale_code')
-                               ->find()
-                               ->fetch();
+            ->where('ln.display_locale_code', Cookie::getLangLocal())
+            ->joinModel(Name::class, 'n', 'main_table.country_code=n.country_code')
+            ->joinModel(Locale\Name::class, 'ln', 'main_table.code=ln.locale_code')
+            ->find()
+            ->fetch();
         if (!$locale->getId()) {
             $this->getMessageManager()->addWarning(__('该区域未激活或者未安装！'));
         }
@@ -109,15 +109,15 @@ class Words extends BaseController
         // 如果存在搜索
         if ($search = $this->request->getGet('search')) {
             $this->localeDictionary->where($this->localeDictionary::fields_WORD, "%$search%", 'like', 'or')
-                                   ->where($this->localeDictionary::fields_TRANSLATE, "%$search%", 'like');
+                ->where($this->localeDictionary::fields_TRANSLATE, "%$search%", 'like');
         }
         // 获取当前操作的词典
         $this->localeDictionary->where(Locale\Dictionary::fields_LOCALE_CODE, $locale->getId())
-                               ->order('create_time', 'desc')
-                               ->order('update_time', 'asc')
-                               ->pagination()
-                               ->select()
-                               ->fetch();
+            ->order('create_time', 'desc')
+            ->order('update_time', 'asc')
+            ->pagination()
+            ->select()
+            ->fetch();
         $this->assign('words', $this->localeDictionary->getItems());
         $this->assign('pagination', $this->localeDictionary->getPagination());
         $this->assign('total', $this->localeDictionary->pagination['totalSize']);
@@ -143,8 +143,7 @@ class Words extends BaseController
         $collected_words = array_merge($words, $this->i18n->getCollectedWords());
         foreach ($collected_words as $key => $collected_word) {
             unset($collected_words[$key]);
-            $key = trim($key);
-            if($key){
+            if($key and $key = trim((string)$key)){
                 $collected_words[] = [
                     $this->localeDictionary::fields_WORD        => $key,
                     $this->localeDictionary::fields_LOCALE_CODE => $locale_code,
@@ -217,12 +216,12 @@ class Words extends BaseController
     {
         $code   = $this->request->getParam('code');
         $locale = $this->locale->where([
-                                           $this->locale::fields_IS_ACTIVE  => 1,
-                                           $this->locale::fields_IS_INSTALL => 1,
-                                           $this->locale::fields_CODE       => $code
-                                       ])
-                               ->find()
-                               ->fetch();
+            $this->locale::fields_IS_ACTIVE  => 1,
+            $this->locale::fields_IS_INSTALL => 1,
+            $this->locale::fields_CODE       => $code
+        ])
+            ->find()
+            ->fetch();
         if (!$locale->getId()) {
             $this->getMessageManager()->addWarning(__('地区码未安装或者未激活！地区码：%1', $this->request->getParam('code')));
             $this->redirect('*/backend/countries/locale/words', $this->request->getParams());
