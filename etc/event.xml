@@ -5,6 +5,9 @@
     <event name="App::detect_language">
         <observer name="Weline_I18n::detect_language" instance="Weline\I18n\Observer\AppDetectLanguage" disabled="false" shared="true"/>
     </event>
+    <event name="Framework_Cookie::lang_local">
+        <observer name="Weline_I18n::i18n_lang_local" instance="Weline\I18n\Observer\LangLocal" disabled="false" shared="true"/>
+    </event>
     <event name="Framework_phrase::get_words_file">
         <observer name="Weline_I18n::get_words_file" instance="Weline\I18n\Observer\GetWordsFile" disabled="false" shared="true"/>
     </event>
