@@ -118,7 +118,8 @@ class Local extends \Weline\Framework\App\Controller\BackendController
         }
         /**@var \Weline\I18n\LocalModel $model */
         $model = ObjectManager::getInstance($model);
-        $model->reset()->insert($insertDesriptions, [$field, \Weline\I18n\LocalModel::fields_local_code])->fetch();
+//        dd($model->reset()->insert($insertDesriptions,'eav_entity_id,local_code',$field)->getPrepareSql());
+        $model->reset()->insert($insertDesriptions,'eav_entity_id,local_code',$field)->fetch();
         $this->getMessageManager()->addSuccess(__('翻译完成!'));
         return $this->get();
     }
