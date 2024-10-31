@@ -54,12 +54,12 @@ class Locals extends \Weline\Framework\Database\Model
 //        $setup->dropTable();
         if (!$setup->tableExist()) {
             $setup->createTable()
-                ->addColumn(self::fields_ID, Table::column_type_VARCHAR, 10, 'not null', '地方代码')
-                ->addColumn(self::fields_TARGET_CODE, Table::column_type_VARCHAR, 10, 'not null', '展示的地方代码')
-                ->addColumn(self::fields_NAME, Table::column_type_VARCHAR, 60, 'not null', '展示的地方代码对应地方代码名称')
-                ->addColumn(self::fields_IS_ACTIVE, Table::column_type_SMALLINT, 1, 'not null default 0', '启用状态')
-                ->addColumn(self::fields_IS_INSTALL, Table::column_type_SMALLINT, 1, 'not null default 0', '是否安装')
-                ->addColumn(self::fields_FLAG, Table::column_type_TEXT, 20000, '', 'svg国旗')
+                ->addColumn(self::fields_ID, TableInterface::column_type_VARCHAR, 10, 'not null', '地方代码')
+                ->addColumn(self::fields_TARGET_CODE, TableInterface::column_type_VARCHAR, 10, 'not null', '展示的地方代码')
+                ->addColumn(self::fields_NAME, TableInterface::column_type_VARCHAR, 60, 'not null', '展示的地方代码对应地方代码名称')
+                ->addColumn(self::fields_IS_ACTIVE, TableInterface::column_type_SMALLINT, 1, 'not null default 0', '启用状态')
+                ->addColumn(self::fields_IS_INSTALL, TableInterface::column_type_SMALLINT, 1, 'not null default 0', '是否安装')
+                ->addColumn(self::fields_FLAG, TableInterface::column_type_TEXT, 20000, '', 'svg国旗')
                 ->addIndex(TableInterface::index_type_KEY, 'idx_code', self::fields_CODE, '区码索引')
                 ->addIndex(TableInterface::index_type_KEY, 'idx_target_code', self::fields_TARGET_CODE, '目标区码索引')
                 ->addIndex(TableInterface::index_type_KEY, 'idx_name', self::fields_NAME, '名字索引')
