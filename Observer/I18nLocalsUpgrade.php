@@ -57,7 +57,7 @@ class I18nLocalsUpgrade implements \Weline\Framework\Event\ObserverInterface
                                  ->update($localData)
                                  ->fetch();
                 } else {
-                    $this->locals->reset()->insert($localData)->fetch();
+                    $this->locals->reset()->insert($localData,'','code,target_code')->fetch();
                 }
             }
         }

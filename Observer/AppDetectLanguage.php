@@ -30,7 +30,7 @@ class AppDetectLanguage implements ObserverInterface
                 ->where(Locals::fields_IS_INSTALL, 1)
                 ->where(Locals::fields_IS_ACTIVE, 1)
                 ->select()
-                ->fetchOrigin();
+                ->fetchArray();
             foreach ($locals as &$local) {
                 $local = $local['code'];
             }

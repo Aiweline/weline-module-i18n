@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Weline\I18n\Model;
 
 use Weline\Framework\Database\Api\Db\TableInterface;
-use Weline\Framework\Database\Db\Ddl\Table;
 use Weline\Framework\Manager\ObjectManager;
 use Weline\Framework\Setup\Data\Context;
 use Weline\Framework\Setup\Db\ModelSetup;

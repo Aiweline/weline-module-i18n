@@ -16,6 +16,7 @@ namespace Weline\I18n\Controller\Backend\Countries\Locale;
 use Weline\Framework\App\Env;
 use Weline\Framework\App\System;
 use Weline\Framework\Http\Cookie;
+use Weline\Framework\Manager\Message;
 use Weline\Framework\Manager\ObjectManager;
 use Weline\Framework\Phrase\Cache\PhraseCache;
 use Weline\I18n\Cache\I18nCache;
@@ -26,7 +27,7 @@ use Weline\I18n\Model\Dictionary;
 use Weline\I18n\Model\I18n;
 use Weline\I18n\Model\Locale;
 
-#[\Weline\Framework\Acl\Acl('Weline_I18n::i18n','国际化I18n管理', 'ri-translate','国际化I18n管理')]
+#[\Weline\Framework\Acl\Acl('Weline_I18n::i18n', '国际化I18n管理', 'ri-translate', '国际化I18n管理')]
 class Words extends BaseController
 {
     /**
@@ -46,7 +47,7 @@ class Words extends BaseController
     )
     {
         parent::__construct($locale, $i18n);
-        $this->dictionary       = $dictionary;
+        $this->dictionary = $dictionary;
         $this->localeDictionary = $localeDictionary;
     }
 
@@ -68,7 +69,7 @@ class Words extends BaseController
                 $this->dictionary->commit();
             } catch (\Exception $exception) {
                 $this->dictionary->rollBack();
-                $this->getMessageManager()->addException($exception);
+                Message::exception($exception);
                 $this->redirect('*/backend/countries/locales', $this->request->getParams());
             }
         }
@@ -85,15 +86,15 @@ class Words extends BaseController
      * @throws \ReflectionException
      * @throws \Weline\Framework\App\Exception
      */
-    #[\Weline\Framework\Acl\Acl('Weline_I18n::i18n_words', '1i8n词典管理','mdi mdi-bookshelf', '1i8n词典管理')]
+    #[\Weline\Framework\Acl\Acl('Weline_I18n::i18n_words', '1i8n词典管理', 'mdi mdi-bookshelf', '1i8n词典管理')]
     public function index(): mixed
     {
         $locale_code = $this->request->getGet('code');
         // 查询已安装并且已经激活的地方代码
         $locale = $this->locale->clear()->where(
             [
-                $this->locale::fields_CODE       => $locale_code,
-                $this->locale::fields_IS_ACTIVE  => 1,
+                $this->locale::fields_CODE => $locale_code,
+                $this->locale::fields_IS_ACTIVE => 1,
                 $this->locale::fields_IS_INSTALL => 1
             ]
         )->where('n.display_locale_code', Cookie::getLangLocal())
@@ -103,7 +104,7 @@ class Words extends BaseController
             ->find()
             ->fetch();
         if (!$locale->getId()) {
-            $this->getMessageManager()->addWarning(__('该区域未激活或者未安装！'));
+            Message::warning(__('该区域未激活或者未安装！'));
         }
         $this->assign('locale', $locale);
         // 如果存在搜索
@@ -121,7 +122,7 @@ class Words extends BaseController
         $this->assign('words', $this->localeDictionary->getItems());
         $this->assign('pagination', $this->localeDictionary->getPagination());
         $this->assign('total', $this->localeDictionary->pagination['totalSize']);
-        $this->assign('translate_mode', __(Env::getInstance()->getConfig('translate_mode')??''));
+        $this->assign('translate_mode', __(Env::getInstance()->getConfig('translate_mode') ?? ''));
         return $this->fetch();
     }
 
@@ -134,7 +135,7 @@ class Words extends BaseController
             $this->redirect('*/backend/countries/locale/words', $this->request->getParams());
         }
         // 从词典获取
-        $words = $this->dictionary->select()->fetchOrigin();
+        $words = $this->dictionary->select()->fetchArray();
         foreach ($words as $key => $word) {
             unset($words[$key]);
             $words[$word[$this->dictionary::fields_WORD]] = $word[$this->dictionary::fields_WORD];
@@ -143,16 +144,16 @@ class Words extends BaseController
         $collected_words = array_merge($words, $this->i18n->getCollectedWords());
         foreach ($collected_words as $key => $collected_word) {
             unset($collected_words[$key]);
-            if($key and $key = trim((string)$key)){
+            if ($key and $key = trim((string)$key)) {
                 $collected_words[] = [
-                    $this->localeDictionary::fields_WORD        => $key,
+                    $this->localeDictionary::fields_WORD => $key,
                     $this->localeDictionary::fields_LOCALE_CODE => $locale_code,
-                    $this->localeDictionary::fields_MD5         => md5($locale_code . $key),
-                    $this->localeDictionary::fields_TRANSLATE   => $key,
+                    $this->localeDictionary::fields_MD5 => md5($locale_code . $key),
+                    $this->localeDictionary::fields_TRANSLATE => $key,
                 ];
             }
         }
-        if($collected_words){
+        if ($collected_words) {
             $this->localeDictionary->beginTransaction();
             try {
                 $this->localeDictionary->insert($collected_words, $this->localeDictionary::fields_MD5)->fetch()->commit();
@@ -178,12 +179,12 @@ class Words extends BaseController
         }
         unset($data['country_code']);
         $data['locale_code'] = $data['code'];
-        $data['translate']   = htmlentities(trim($data['translate']));
+        $data['translate'] = htmlentities(trim($data['translate']));
         unset($data['code']);
         // 更新翻译
         $this->localeDictionary->beginTransaction();
         try {
-            $this->localeDictionary->insert($data, [$this->localeDictionary::fields_MD5, $this->localeDictionary::fields_TRANSLATE])->fetch();
+            $this->localeDictionary->insert($data, $this->localeDictionary::fields_MD5, $this->localeDictionary::fields_TRANSLATE)->fetch();
             $this->localeDictionary->commit();
             return $this->fetchJson($this->success(__('成功保存！')));
         } catch (\Exception $exception) {
@@ -214,11 +215,11 @@ class Words extends BaseController
 
     public function push()
     {
-        $code   = $this->request->getParam('code');
+        $code = $this->request->getParam('code');
         $locale = $this->locale->where([
-            $this->locale::fields_IS_ACTIVE  => 1,
+            $this->locale::fields_IS_ACTIVE => 1,
             $this->locale::fields_IS_INSTALL => 1,
-            $this->locale::fields_CODE       => $code
+            $this->locale::fields_CODE => $code
         ])
             ->find()
             ->fetch();
@@ -237,7 +238,7 @@ class Words extends BaseController
         if (!is_file($register_file)) {
             touch($register_file);
         }
-        $pack_document         = $this->i18n->getLocaleName($locale->getId(), Cookie::getLangLocal()) . "({$this->i18n->getLocaleName($locale->getId(),$locale->getId())})";
+        $pack_document = $this->i18n->getLocaleName($locale->getId(), Cookie::getLangLocal()) . "({$this->i18n->getLocaleName($locale->getId(),$locale->getId())})";
         $register_file_content = <<<REGISTER_CONTENT
 <?php
 
@@ -265,8 +266,11 @@ REGISTER_CONTENT;
         if (!is_file($pack_file)) {
             touch($pack_file);
         }
-        $locale_dictionaries = $this->localeDictionary->where($this->localeDictionary::fields_LOCALE_CODE, $code)->select()->fetchOrigin();
-        $pack_file_content   = '';
+        $locale_dictionaries = $this->localeDictionary
+            ->where($this->localeDictionary::fields_LOCALE_CODE, $code)
+            ->select()
+            ->fetchArray();
+        $pack_file_content = '';
         foreach ($locale_dictionaries as $locale_dictionary) {
             $pack_file_content .= $locale_dictionary['word'] . ',' . $locale_dictionary['translate'] . PHP_EOL;
         }
@@ -278,13 +282,13 @@ REGISTER_CONTENT;
         /**@var \Weline\Framework\Cache\CacheInterface $phrase */
         $phrase = ObjectManager::getInstance(PhraseCache::class . 'Factory');
         $phrase->clear();
-        $this->getMessageManager()->addSuccess(__('成功清理i18n缓存！'));
+        Message::success(__('成功清理i18n缓存！'));
         // 清理生成的模板缓存文件
         /**@var System $system */
         $system = ObjectManager::getInstance(System::class);
         $system->exec('rm -rf ' . Env::path_framework_generated_complicate);
-        $this->getMessageManager()->addSuccess(__('成功清理系统模板缓存文件！'));
-        $this->getMessageManager()->addSuccess(__('成功发布！'));
+        Message::success(__('成功清理系统模板缓存文件！'));
+        Message::success(__('成功发布！'));
         $this->redirect('*/backend/countries/locale/words', $this->request->getParams());
     }
 
